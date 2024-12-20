@@ -1,5 +1,5 @@
 COGS_DIR: str = "src/bot/cogs/"
-SETTINGS_DIR: str = "src/bot/settings/"
+SETTINGS_DIR: str = "rsc/settings/"
 LOGGER_CONFIG_FILE: str = "rsc/logs/logger.conf"
 CMD_PREFIX: str = "!"
 MEMORY_DIR = "rsc/memory/"
