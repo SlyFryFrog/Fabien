@@ -3,3 +3,6 @@ __pycache__/
 .logs/
 rsc/memory/
 .env
+.DS_Store
+.env
+.mp3
