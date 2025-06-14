@@ -1,36 +1,46 @@
+import discord
 import os
-from discord import Intents
-from discord.errors import LoginFailure
+from discord import Intents, Interaction
+from discord import app_commands
+from discord.app_commands import tree
 from discord.ext.commands import Bot
 from src.logger import LOGGER
-from src.constants import SETTINGS_DIR, COGS_DIR
-from dotenv import load_dotenv
+from src.constants import COGS_DIR, FABIEN_APP_ID, FABIEN_TOKEN, ALLOWED_GUILD_IDS
 
 class Fabien(Bot):
     def __init__(self, command_prefix: str, intents: Intents):
-        try:
-            load_dotenv(f"{SETTINGS_DIR}.env")
-            application_id = os.getenv("FABIEN_APP_ID")
-        except LoginFailure:
-            LOGGER.critical("Failed to load discord application id.")
-        
-        super().__init__(command_prefix=command_prefix, intents=intents, application_id=application_id)
+        if not FABIEN_APP_ID:
+            LOGGER.critical("FABIEN_APP_ID not set in .env")
+            raise ValueError("Missing FABIEN_APP_ID")
 
-    def load_key(self) -> None:
+        super().__init__(
+            command_prefix=command_prefix,
+            intents=intents,
+            application_id=FABIEN_APP_ID
+        )
 
+    def start_bot(self) -> None:
         @self.event
-        async def on_ready() -> None:
-            LOGGER.debug("Successfully logged in.")
-        
-        try:
-            load_dotenv(f"{SETTINGS_DIR}.env")
-            self.run(os.getenv("FABIEN_TOKEN"))
-        except LoginFailure:
-            LOGGER.critical("Failed to load discord token.")
+        async def on_ready():
+            LOGGER.info("Logged in as %s", self.user)
+            await self.tree.sync()
+            await self.prune_unauthorized_guilds()
+            
+        if not FABIEN_TOKEN:
+            LOGGER.critical("FABIEN_TOKEN not set in .env")
+            raise ValueError("Missing FABIEN_TOKEN")
+
+        self.run(FABIEN_TOKEN)
+    
+    async def prune_unauthorized_guilds(self):
+        for guild in self.guilds:
+            if guild.id not in ALLOWED_GUILD_IDS:
+                LOGGER.warning("Leaving unauthorized guild: %s (%s)", guild.name, guild.id)
+                await guild.leave()
             
     async def load_cogs(self) -> None:
         path: str = COGS_DIR.replace("/", ".")
-        
+
         for file in os.listdir(COGS_DIR):
             if file.endswith(".py"):
                 try:
@@ -39,6 +49,6 @@ class Fabien(Bot):
                 except Exception as e:
                     LOGGER.error("Failed to load cog from file: %s. Cause: %s", file, e)
                     LOGGER.error(e)
-        
+                
     async def setup_hook(self):
-        await self.tree.sync()
+        await self.load_cogs()

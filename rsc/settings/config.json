@@ -1,0 +1,18 @@
+{
+    "ollama": {
+        "memory":
+        {
+            "context_window": 100,
+            "scope": "server"
+        },
+        "prompt": {
+            "role": "system",
+            "content": ""
+        }
+    },
+    "bot": {
+        "command": {
+            "prefix": "!"
+        }
+    }
+}
