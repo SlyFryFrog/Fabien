@@ -33,10 +33,10 @@ class FabienHelp(commands.Cog):
                 ephemeral=True
             )
     
-    @app_commands.command(name="set_system_prompt")
+    @app_commands.command(name="set_system_prompt", description="Admin only; changes the system prompt used for the server.")
     async def set_system_prompt(self, interaction: Interaction):
         if interaction.user.guild_permissions.administrator:
-            pass
+            pass    # TODO
         else:
             await interaction.response.send_message(
                 'You must be an administrator to use this command!',

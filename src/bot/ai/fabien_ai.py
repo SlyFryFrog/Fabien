@@ -66,4 +66,3 @@ class FabienAI:
 
     def clear_memory(self, id: str) -> None:
         self.guild_memory[id] = []
-    

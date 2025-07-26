@@ -4,7 +4,7 @@ from discord.ext.commands import Bot, CommandNotFound, MissingRequiredArgument, 
 class DiscordErrors(commands.Cog):
     """
     Extension for the bot that gives special error handling to specific
-    erros that may occur.
+    errors that may occur.
 
     Args:
         commands (Cog): inherited class that is used to create a Cog
